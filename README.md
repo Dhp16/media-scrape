@@ -8,3 +8,4 @@
    5. `KEYWORDS` The keywords you would like to trigger alerts
 
 2. Runtime logs
+# TODO: add screenshtos
