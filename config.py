@@ -4,9 +4,19 @@ from manage_podcasts.my_types import Media
 
 DOWNLOADS_FOLDER = "C:\\dev\\podsights\\manage_podcasts\\audio_files\\temp\\"
 
-
 SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
 SLACK_CHANNEL_ID = "C09A8LUMU4R"
+
+SOURCES = [
+    {
+        "type": Media.PODCAST,
+        "name": "Agrolink",
+        "url": "https://www.listennotes.com/podcasts/agrolink-news-agrolink-vcfmUpiP2zO/",
+        "language": "portugese",
+        "language_code": "pt",
+        "latest_episode": {},
+    },
+]
 
 
 KEYWORDS = {
@@ -111,14 +121,3 @@ KEYWORDS = {
         "improving margins",
     ],
 }
-
-SOURCES = [
-    {
-        "type": Media.PODCAST,
-        "name": "Agrolink",
-        "url": "https://www.listennotes.com/podcasts/agrolink-news-agrolink-vcfmUpiP2zO/",
-        "language": "portugese",
-        "language_code": "pt",
-        "latest_episode": {},
-    },
-]
