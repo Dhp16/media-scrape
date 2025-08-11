@@ -1,6 +1,6 @@
 import os
 
-from manage_podcasts.my_types import Media
+from manage_podcasts.src.my_types import Media
 
 DOWNLOADS_FOLDER = "C:\\dev\\podsights\\manage_podcasts\\audio_files\\temp\\"
 

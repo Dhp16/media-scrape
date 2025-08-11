@@ -3,10 +3,10 @@ import itertools
 
 from flashtext import KeywordProcessor
 
-from manage_podcasts.selenium_handler import download_audio
-from manage_podcasts.utils.download_series import fetch_and_extract_all_episodes
-from manage_podcasts.transcription import transcribe
-from manage_podcasts.slack_alert import send_slack_message
+from manage_podcasts.src.selenium_handler import download_audio
+from manage_podcasts.src.download_series import fetch_and_extract_all_episodes
+from manage_podcasts.src.transcription import transcribe
+from manage_podcasts.src.slack_alert import send_slack_message
 
 
 def find_keywords(text, keywords):
