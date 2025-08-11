@@ -90,6 +90,18 @@ def parse_latest_episode_from_html(soup, base_url):
         )
         return None
 
+    audio_div = episode_item_container.find("div", attrs={"data-audio": True})
+
+    if not audio_div:
+        print("Could not find audio div for LATEST epsiode.")
+        return None
+
+    audio_link = audio_div.get("data-audio")
+
+    if not audio_link:
+        print("Could not find audio link for LATEST epsiode.")
+        return None
+
     # The actual episode content is often in a <div class="flex"> within this grid.
     # We are looking for the first such item.
     episode_item_div = episode_item_container.find(
@@ -99,7 +111,10 @@ def parse_latest_episode_from_html(soup, base_url):
         print("Could not find the 'div.flex' for the latest episode item.")
         return None
 
-    return parse_single_episode_item(episode_item_div, base_url)
+    episode_info = parse_single_episode_item(episode_item_div, base_url)
+    episode_info["audio_url"] = audio_link
+
+    return episode_info
 
 
 def parse_previous_episodes_from_html(soup, base_url):
