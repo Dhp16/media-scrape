@@ -3,7 +3,7 @@ import itertools
 
 from flashtext import KeywordProcessor
 
-from manage_podcasts.selenium_handler import download_audio_from_redirect
+from manage_podcasts.selenium_handler import download_audio
 from manage_podcasts.utils.download_series import fetch_and_extract_all_episodes
 from manage_podcasts.transcription import transcribe
 from manage_podcasts.slack_alert import send_slack_message
@@ -34,7 +34,7 @@ async def handle_podcast(source, keywords):
     Keywords is just a list of key words to search for
     """
 
-    # Step 1: Get link for latest episode
+    print("\nStep 1: Get link for latest episode...")
     latest_episode = fetch_and_extract_all_episodes(source["url"], latest_only=True)[0]
 
     if (
@@ -44,10 +44,9 @@ async def handle_podcast(source, keywords):
         print(f"Latest episode of {source['name']} already parsed.")
         return  # latest episode already
 
-    # Step 2: Download audio file
-    file_location = await download_audio_from_redirect(
-        latest_episode["title"], latest_episode["audio_url"]
-    )
+    print("\nStep 2: Download audio file...")
+
+    file_location = download_audio(latest_episode["title"], latest_episode["audio_url"])
 
     if not file_location:
         print(
@@ -55,13 +54,13 @@ async def handle_podcast(source, keywords):
         )
         return
 
-    # Step 3: Transcribe and translate if necessary
+    print("\nStep 3: Transcribe and translate if necessary...")
 
     transcription = transcribe(
         file_location, source["language_code"]
     )  # returns dict with keys: ['text', 'segments', 'language']
 
-    # Step 4: Find keywords
+    print("\nStep 4: Find keywords...")
     keywords_found = find_keywords(transcription["text"], keywords)
 
     if not keywords_found:
@@ -70,7 +69,7 @@ async def handle_podcast(source, keywords):
         )
         return
 
-    # Step 5: Send slack alert
+    print("\nStep 5: Send slack alert...")
     message = f"""
         Found keyword(s): {",".join(keywords_found)} in latest episode of {source['name']} titled: {latest_episode["title"]}. It can be found here: {latest_episode["link"]}.
         

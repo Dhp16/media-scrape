@@ -39,7 +39,7 @@ def download_audio_from_redirect(redirect_url: str, filepath: str):
         driver.get(redirect_url)
 
         # Give the browser a moment to handle the redirection
-        time.sleep(5)
+        time.sleep(5)  # TODO: Can check more specifically for page being ready
 
         # 2. Get the final URL from the browser
         final_url = driver.current_url
