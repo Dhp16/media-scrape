@@ -1,5 +1,4 @@
 import whisper
-import os
 import time  # To measure transcription time
 
 
@@ -33,7 +32,7 @@ def setup_model():
         raise Exception(msg)
 
 
-def transcribe(audio_file_path: str, language_code):
+def transcribe(audio_file_path: str, language_code: str, verbose=False):
     model = setup_model()
 
     # --- Transcribe the audio ---
@@ -43,7 +42,7 @@ def transcribe(audio_file_path: str, language_code):
     model_task = "transcribe" if language_code == "en" else "translate"
 
     result = model.transcribe(
-        audio_file_path, language=language_code, task=model_task, verbose=True
+        audio_file_path, language=language_code, task=model_task, verbose=verbose
     )
 
     end_time = time.time()
