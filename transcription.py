@@ -10,7 +10,7 @@ def setup_model():
     # Larger models are more accurate but slower and require more resources.
     # Start with "base" or "small" and see how it performs on your machine.
     # Add ".en" for English-only models (e.g., "base.en"), which might be faster/better if you only need English.
-    MODEL_SIZE = "base.en"
+    MODEL_SIZE = "small"
 
     # --- Load the Whisper model ---
     # This will download the model weights the first time you use a specific size.
@@ -33,19 +33,18 @@ def setup_model():
         raise Exception(msg)
 
 
-def transcribe(audio_file_path: str):
+def transcribe(audio_file_path: str, language_code):
     model = setup_model()
 
     # --- Transcribe the audio ---
     print(f"Starting transcription for '{audio_file_path}'...")
     start_time = time.time()
 
-    # Perform the transcription
-    # For long audio, this might take a significant amount of time!
+    model_task = "transcribe" if language_code == "en" else "translate"
+
     result = model.transcribe(
-        audio_file_path, verbose=True
-    )  # verbose=True shows progress
-    # result = model.transcribe(filepath, language="pt", fp16=False, verbose=True)
+        audio_file_path, language=language_code, task=model_task, verbose=True
+    )
 
     end_time = time.time()
     duration = end_time - start_time
@@ -56,3 +55,8 @@ def transcribe(audio_file_path: str):
     print(result["text"])
 
     return result
+
+
+if __name__ == "__main__":
+    path = "C:\\dev\\podsights\\manage_podcasts\\audio_files\\temp\\agnews_test.mp3"
+    transcribe(path, "pt")

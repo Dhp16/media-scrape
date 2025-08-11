@@ -343,7 +343,7 @@ async def download_file():
 
     sanitized_title = sanitize_filename("agnews test")
 
-    fs_location = DOWNLOADS_FOLDER + sanitized_title
+    fs_location = DOWNLOADS_FOLDER + sanitized_title + ".mp3"
 
     await download_file_async(url, fs_location)
 
