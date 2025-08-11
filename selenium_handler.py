@@ -49,7 +49,6 @@ def download_audio_from_redirect(redirect_url: str, filepath: str):
         if final_url:
             print(f"Starting download of the audio file...")
 
-            # The final URL should be a direct link, so we don't need the User-Agent header
             response = requests.get(final_url, stream=True)
 
             if response.status_code == 200:
@@ -57,13 +56,13 @@ def download_audio_from_redirect(redirect_url: str, filepath: str):
                     for chunk in response.iter_content(chunk_size=1024):
                         if chunk:
                             f.write(chunk)
+
+                is_success = True
                 print(f"Audio downloaded successfully as '{filepath}'.")
             else:
                 print(f"Error downloading file. Status code: {response.status_code}")
         else:
             print("Could not get a final URL from the browser.")
-
-        is_success = True
 
     except Exception as e:
         print(f"An error occurred: {e}")
