@@ -28,6 +28,7 @@ def download_audio_from_redirect(redirect_url: str, filepath: str):
         "--headless"
     )  # Run in headless mode (without opening a browser window)
     options.add_argument("--disable-gpu")
+    options.add_argument("--mute-audio")
 
     driver = webdriver.Chrome(options=options)
 
