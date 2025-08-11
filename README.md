@@ -4,7 +4,7 @@
    1. `DOWNLOADS_FOLDER` Where files will be stored during runtime for processing purposes
    2. `SLACK_BOT_TOKEN` The token for your slack bot, [instructions here](https://api.slack.com/tutorials/tracks/getting-a-token).
    3. `SLACK_CHANNEL_ID` The ID of the slack channel where you would like the alerts
-   4. `SOURCES` Your desired sources
+   4. `SOURCES` Your desired sources (currently supports any podcast on "https://www.listennotes.com/" and a single news website: "https://www.agrolink.com.br/")
    5. `KEYWORDS` The keywords you would like to trigger alerts
 
 2. Runtime logs
