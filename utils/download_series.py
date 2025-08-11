@@ -29,12 +29,15 @@ def parse_single_episode_item(item_div, base_url):
     if not link_tag:
         return None
 
+    time_tag = item_div.find("time", attrs={"datetime": True})
+    published_at = time_tag.get("datetime") if time_tag else None
+
     title = link_tag.get_text(strip=True)
     episode_link_href = link_tag.get("href")
 
     if title and episode_link_href:
         absolute_link = urljoin(base_url, episode_link_href)
-        return {"title": title, "link": absolute_link}
+        return {"title": title, "link": absolute_link, "published_at": published_at}
     return None
 
 
@@ -168,7 +171,7 @@ def parse_previous_episodes_from_html(soup, base_url):
     return episodes_data
 
 
-def fetch_and_extract_all_episodes(podcast_url):
+def fetch_and_extract_all_episodes(podcast_url, latest_only=False):
     """
     Fetches the main podcast page and extracts both latest and previous episodes.
     Args:
@@ -203,6 +206,9 @@ def fetch_and_extract_all_episodes(podcast_url):
             all_episodes.append(latest_episode)
         else:
             print("Could not parse the LATEST episode.")
+
+        if latest_only:
+            return all_episodes
 
         # 2. Get previous episodes
         previous_episodes = parse_previous_episodes_from_html(
@@ -239,7 +245,7 @@ if __name__ == "__main__":
     target_url = aggrolink_url
 
     print(f"Attempting to scrape all episodes from: {target_url}")
-    extracted_episodes = fetch_and_extract_all_episodes(target_url)
+    extracted_episodes = fetch_and_extract_all_episodes(target_url, latest_only=True)
 
     if extracted_episodes:
         print(
