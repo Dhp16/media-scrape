@@ -7,14 +7,30 @@ DOWNLOADS_FOLDER = "C:\\dev\\podsights\\manage_podcasts\\audio_files\\temp\\"
 SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
 SLACK_CHANNEL_ID = "C09A8LUMU4R"
 
+TIMOUT_MS = 15 * 60 * 1000
+# time between checks for updates
+
 SOURCES = [
     {
         "type": Media.PODCAST,
         "name": "Agrolink",
         "url": "https://www.listennotes.com/podcasts/agrolink-news-agrolink-vcfmUpiP2zO/",
-        "language": "portugese",
+        "language": "portuguese",
         "language_code": "pt",
-        "latest_episode": {},
+    },
+    {
+        "type": Media.PODCAST,
+        "name": "Agriculture Today",
+        "url": "https://www.listennotes.com/podcasts/agriculture-today-kansas-state-university-2V9_Cbx0GAm/",
+        "language": "english",
+        "language_code": "en",
+    },
+    {
+        "type": Media.PODCAST,
+        "name": "Canal Rural Clima",  # Brazilian weather
+        "url": "https://www.listennotes.com/podcasts/canal-rural-clima-pod360-canal-rural-rox3XgWqy0s/",
+        "language": "portuguese",
+        "language_code": "pt",
     },
 ]
 

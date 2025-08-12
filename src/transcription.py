@@ -49,10 +49,6 @@ def transcribe(audio_file_path: str, language_code: str, verbose=False):
     duration = end_time - start_time
     print(f"\nTranscription finished in {duration:.2f} seconds.")
 
-    # --- Process and Display the Result ---
-    print("\n--- Full Transcript ---")
-    print(result["text"])
-
     return result
 
 

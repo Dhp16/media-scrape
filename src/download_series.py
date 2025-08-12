@@ -1,10 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-import os
 
 
-def parse_single_episode_item(item_div, base_url):
+def parse_episode(item_div, base_url):
     """
     Helper function to parse a single episode item div (common structure).
     Args:
@@ -50,7 +49,6 @@ def parse_latest_episode_from_html(soup, base_url):
     Returns:
         dict: A dictionary with 'title' and 'link' for the latest episode, or None.
     """
-    print("Attempting to parse LATEST EPISODE section...")
     latest_episode_heading = None
     # The <h2> has class "ln-page-card-title" and contains "LATEST EPISODE"
     for h2_tag in soup.find_all("h2", class_="ln-page-card-title"):
@@ -111,7 +109,7 @@ def parse_latest_episode_from_html(soup, base_url):
         print("Could not find the 'div.flex' for the latest episode item.")
         return None
 
-    episode_info = parse_single_episode_item(episode_item_div, base_url)
+    episode_info = parse_episode(episode_item_div, base_url)
     episode_info["audio_url"] = audio_link
 
     return episode_info
@@ -187,14 +185,6 @@ def parse_previous_episodes_from_html(soup, base_url):
 
 
 def fetch_and_extract_latest_episode(podcast_url):
-    """
-    Fetches the main podcast page and extracts both latest and previous episodes.
-    Args:
-        podcast_url (str): The URL of the ListenNotes podcast page.
-    Returns:
-        list: A list of dictionaries, where each dictionary contains
-              'title' and 'link' of an episode. Latest episode is first.
-    """
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     }
@@ -204,7 +194,6 @@ def fetch_and_extract_latest_episode(podcast_url):
         response.raise_for_status()
         soup = BeautifulSoup(response.content, "html.parser")
 
-        # 1. Get the latest episode
         latest_episode = parse_latest_episode_from_html(soup, base_url=podcast_url)
 
         return latest_episode

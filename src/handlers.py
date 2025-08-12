@@ -3,6 +3,8 @@ import itertools
 
 from flashtext import KeywordProcessor
 
+from manage_podcasts.config import TIMOUT_MS
+from manage_podcasts.src.my_types import Media
 from manage_podcasts.src.selenium_handler import download_audio
 from manage_podcasts.src.download_series import fetch_and_extract_latest_episode
 from manage_podcasts.src.transcription import transcribe
@@ -13,11 +15,7 @@ def find_keywords(text, keywords):
     keyword_processor = KeywordProcessor()
     keyword_processor.add_keywords_from_list(keywords)
 
-    found_keywords = keyword_processor.extract_keywords(text)
-
-    print("Found keywords:")
-    print(found_keywords)
-    return found_keywords
+    return keyword_processor.extract_keywords(text)
 
 
 async def handle_podcast(source, keywords):
@@ -34,17 +32,17 @@ async def handle_podcast(source, keywords):
     Keywords is just a list of key words to search for
     """
 
-    print("\nStep 1: Get link for latest episode...")
+    print(f"\nStep 1: Get link for latest episode of {source['name']}...")
     latest_episode = fetch_and_extract_latest_episode(source["url"])
 
     if (
-        source["latest_episode"]
+        source.get("latest_episode", None)
         and latest_episode["title"] == source["latest_episode"]["title"]
     ):  # TODO: add time check
         print(f"Latest episode of {source['name']} already parsed.")
         return  # latest episode already
 
-    print("\nStep 2: Download audio file...")
+    print("Step 2: Download audio file...")
 
     file_location = download_audio(latest_episode["title"], latest_episode["audio_url"])
 
@@ -54,13 +52,13 @@ async def handle_podcast(source, keywords):
         )
         return
 
-    print("\nStep 3: Transcribe and translate if necessary...")
+    print("Step 3: Transcribe and translate if necessary...")
 
     transcription = transcribe(
         file_location, source["language_code"]
     )  # returns dict with keys: ['text', 'segments', 'language']
 
-    print("\nStep 4: Find keywords...")
+    print("Step 4: Find keywords...")
     keywords_found = find_keywords(transcription["text"], keywords)
 
     if not keywords_found:
@@ -69,7 +67,7 @@ async def handle_podcast(source, keywords):
         )
         return
 
-    print("\nStep 5: Send slack alert...")
+    print("Step 5: Send slack alert...")
     message = f"""
         Found keyword(s): {",".join(keywords_found)} in latest episode of {source['name']} titled: {latest_episode["title"]}. It can be found here: {latest_episode["link"]}.
         
@@ -78,11 +76,27 @@ async def handle_podcast(source, keywords):
     """
 
     send_slack_message(message)
+    return latest_episode
+
+
+async def handle_news(source, keywords):
+    pass
+
+
+async def iterate_through_media(sources, keywords):
+    while True:
+        for source in sources:
+            if source["type"] == Media.PODCAST:
+                source["latest_episode"] = await handle_podcast(source, keywords)
+            elif source["type"] == Media.NEWS_SITE:
+                source["latest_episode"] = await handle_news(source, keywords)
+
+        print(
+            f"\nFinished cycling through sources, waiting {TIMOUT_MS/(60*1000)} minutes..."
+        )
+        await asyncio.sleep(TIMOUT_MS)
 
 
 def scrape_sources(sources, keywords):
     keywords_flat = list(itertools.chain.from_iterable(keywords.values()))
-
-    source = sources[0]
-
-    asyncio.run(handle_podcast(source, keywords_flat))
+    asyncio.run(iterate_through_media(sources, keywords_flat))
