@@ -48,7 +48,7 @@ def find_keywords(text, keywords):
 
 def format_slack_message(source, episode, keywords_with_context):
     message_parts = []
-    header = f"{len(keywords_with_context)} keywords found in latest episode of *{source['name']}* titled: *{episode['title']}*:"
+    header = f"{len(keywords_with_context)} keywords found in latest episode of *{source['name']}* titled: *{episode['title']}* published at {episode['published_at']}:"
     message_parts.append(header)
 
     for keyword, sentence in keywords_with_context.items():
@@ -114,9 +114,7 @@ async def handle_podcast(source, keywords):
 
     print("Step 5: Send slack alert...")
 
-    alert_message = format_slack_message(
-        source["name"], latest_episode["title"], keywords_with_context
-    )
+    alert_message = format_slack_message(source, latest_episode, keywords_with_context)
     send_slack_message(alert_message)
 
     return latest_episode

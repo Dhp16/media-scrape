@@ -9,7 +9,7 @@ def setup_model():
     # Larger models are more accurate but slower and require more resources.
     # Start with "base" or "small" and see how it performs on your machine.
     # Add ".en" for English-only models (e.g., "base.en"), which might be faster/better if you only need English.
-    MODEL_SIZE = "base"
+    MODEL_SIZE = "small"
 
     # --- Load the Whisper model ---
     # This will download the model weights the first time you use a specific size.
