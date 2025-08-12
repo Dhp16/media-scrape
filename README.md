@@ -7,7 +7,7 @@
 
 
 2. Further possible configurations in `config.py`
-   1. `SOURCES` Your desired sources (currently supports any podcast on "https://www.listennotes.com/" and a single news website: "https://www.agrolink.com.br/")
+   1. `SOURCES` Your desired sources (currently supports any podcast on "https://www.listennotes.com/")
    2. `KEYWORDS` The keywords you would like to trigger alerts
    3. `TIMOUT_MS` Interval in milliseconds between checks for the latest podcast/article available (default 15 minutes).
 
@@ -17,7 +17,7 @@
 
 Run by calling `python main.py`
 
-The code will iterate through the provided sources, download the latest episode and/or article (translate to english where necessary), 
+The code will iterate through the provided sources, download the latest episode (translate to english where necessary), 
 search for the presence of the set keywords and alert to their presence in your chosen slack channel.
 
 **What would I expect to see the in the console?**

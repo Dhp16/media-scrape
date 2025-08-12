@@ -35,17 +35,13 @@ def download_audio_from_redirect(redirect_url: str, filepath: str):
     print(f"Opening redirector URL: {redirect_url} with Selenium...")
 
     try:
-        # 1. Navigate to the initial URL and wait for redirection
         driver.get(redirect_url)
 
-        # Give the browser a moment to handle the redirection
         time.sleep(5)  # TODO: Can check more specifically for page being ready
 
-        # 2. Get the final URL from the browser
-        final_url = driver.current_url
+        final_url = driver.current_url  # original url was redirected, get the new url
         print(f"Final audio URL after redirection: {final_url}")
 
-        # 3. Download the file with requests from the final URL
         if final_url:
             print(f"Starting download of the audio file...")
 

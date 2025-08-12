@@ -1,6 +1,7 @@
 import asyncio
 import itertools
 import os
+import re
 
 from flashtext import KeywordProcessor
 
@@ -26,7 +27,40 @@ def find_keywords(text, keywords):
     keyword_processor = KeywordProcessor()
     keyword_processor.add_keywords_from_list(keywords)
 
-    return keyword_processor.extract_keywords(text)
+    def find_words(sentence):
+        nonlocal keyword_processor
+        return keyword_processor.extract_keywords(sentence)
+
+    sentences = re.split(r"(?<=[.?!])\s+", text)
+
+    keywords_with_context = {}
+    for sentence in sentences:
+        found_in_sentence = find_words(sentence)
+        for keyword in found_in_sentence:
+            # TODO: handle multiple appearances
+            if keyword in keywords_with_context:
+                continue
+
+            keywords_with_context[keyword] = sentence.strip()
+
+    return keywords_with_context
+
+
+def format_slack_message(source, episode, keywords_with_context):
+    message_parts = []
+    header = f"{len(keywords_with_context)} keywords found in latest episode of *{source['name']}* titled: *{episode['title']}*:"
+    message_parts.append(header)
+
+    for keyword, sentence in keywords_with_context.items():
+        bold_sentence = sentence.replace(keyword, f"*{keyword}*")
+
+        # Format the bullet point line using Slack's mrkdwn
+        line = f"• *{keyword}*: {bold_sentence}"
+        message_parts.append(line)
+
+    message_parts.append(f"The episode can be found here: {episode['link']}")
+
+    return "\n".join(message_parts)
 
 
 async def handle_podcast(source, keywords):
@@ -70,28 +104,22 @@ async def handle_podcast(source, keywords):
     )  # returns dict with keys: ['text', 'segments', 'language']
 
     print("Step 4: Find keywords...")
-    keywords_found = find_keywords(transcription["text"], keywords)
+    keywords_with_context = find_keywords(transcription["text"], keywords)
 
-    if not keywords_found:
+    if not keywords_with_context:
         print(
             f"No keywords found in latest episode of {source['name']} titled: {latest_episode["title"]}."
         )
         return
 
     print("Step 5: Send slack alert...")
-    message = f"""
-        Found keyword(s): {",".join(keywords_found)} in latest episode of {source['name']} titled: {latest_episode["title"]}. It can be found here: {latest_episode["link"]}.
-        
-        The full transcription can be found below:
-        {transcription["text"]}
-    """
 
-    send_slack_message(message)
+    alert_message = format_slack_message(
+        source["name"], latest_episode["title"], keywords_with_context
+    )
+    send_slack_message(alert_message)
+
     return latest_episode
-
-
-async def handle_news(source, keywords):
-    pass
 
 
 async def iterate_through_media(sources, keywords):
@@ -99,8 +127,6 @@ async def iterate_through_media(sources, keywords):
         for source in sources:
             if source["type"] == Media.PODCAST:
                 source["latest_episode"] = await handle_podcast(source, keywords)
-            elif source["type"] == Media.NEWS_SITE:
-                source["latest_episode"] = await handle_news(source, keywords)
 
         print(
             f"\nFinished cycling through sources, waiting {TIMOUT_MS/(60*1000)} minutes..."
@@ -113,3 +139,18 @@ async def iterate_through_media(sources, keywords):
 def scrape_sources(sources, keywords):
     keywords_flat = list(itertools.chain.from_iterable(keywords.values()))
     asyncio.run(iterate_through_media(sources, keywords_flat))
+
+
+if __name__ == "__main__":
+    msg = format_slack_message(
+        {"name": "Agrinews"},
+        {
+            "title": "Agrinews 11th of July",
+            "link": "https://www.listennotes.com/podcasts/agrolink-news-agrolink-vcfmUpiP2zO/",
+        },
+        {
+            "export": "Record export tariffs applied",
+            "text": "Everywhere you can imagine there is text.",
+        },
+    )
+    send_slack_message(msg)
