@@ -20,10 +20,10 @@ Run by calling `python main.py`
 The code will iterate through the provided sources, download the latest episode (translate to english where necessary), 
 search for the presence of the set keywords and alert to their presence in your chosen slack channel.
 
-**What would I expect to see the in the console?**
-
-![img.png](docs/logs_screenshot.png)
-
 **What would I expect to see in slack?**
 
 ![img.png](docs/slack_alert_example.png)
+
+**What would I expect to see the in the console?**
+
+![img.png](docs/logs_screenshot.png)
