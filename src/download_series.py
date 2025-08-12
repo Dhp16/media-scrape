@@ -186,7 +186,7 @@ def parse_previous_episodes_from_html(soup, base_url):
     return episodes_data
 
 
-def fetch_and_extract_all_episodes(podcast_url, latest_only=False):
+def fetch_and_extract_latest_episode(podcast_url):
     """
     Fetches the main podcast page and extracts both latest and previous episodes.
     Args:
@@ -195,7 +195,6 @@ def fetch_and_extract_all_episodes(podcast_url, latest_only=False):
         list: A list of dictionaries, where each dictionary contains
               'title' and 'link' of an episode. Latest episode is first.
     """
-    all_episodes = []
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     }
@@ -203,49 +202,18 @@ def fetch_and_extract_all_episodes(podcast_url, latest_only=False):
         print(f"Fetching {podcast_url}...")
         response = requests.get(podcast_url, headers=headers, timeout=15)
         response.raise_for_status()
-
-        # Save HTML for inspection - helpful for debugging if live site changes
-        html_file_path = "listennotes_live_page_full.html"
-        with open(html_file_path, "w", encoding="utf-8") as f:
-            f.write(response.text)
-        print(
-            f"Saved full live page content to '{os.path.abspath(html_file_path)}' for inspection."
-        )
-
         soup = BeautifulSoup(response.content, "html.parser")
 
         # 1. Get the latest episode
         latest_episode = parse_latest_episode_from_html(soup, base_url=podcast_url)
-        if latest_episode:
-            print(f"Successfully parsed LATEST episode: {latest_episode['title']}")
-            all_episodes.append(latest_episode)
-        else:
-            print("Could not parse the LATEST episode.")
 
-        if latest_only:
-            return all_episodes
-
-        # 2. Get previous episodes
-        previous_episodes = parse_previous_episodes_from_html(
-            soup, base_url=podcast_url
-        )
-        if previous_episodes:
-            print(f"Successfully parsed {len(previous_episodes)} PREVIOUS episodes.")
-            # Add previous episodes, avoiding duplication if latest was somehow also in previous
-            for prev_ep in previous_episodes:
-                if not any(ep["link"] == prev_ep["link"] for ep in all_episodes):
-                    all_episodes.append(prev_ep)
-        else:
-            print("Could not parse PREVIOUS episodes or none were found.")
-
-        return all_episodes
-
+        return latest_episode
     except requests.exceptions.RequestException as e:
         print(f"Error fetching page: {e}")
-        return []
+        return None
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-        return []
+        return None
 
 
 # --- Main Execution ---
@@ -259,21 +227,10 @@ if __name__ == "__main__":
 
     target_url = aggrolink_url
 
-    print(f"Attempting to scrape all episodes from: {target_url}")
-    extracted_episodes = fetch_and_extract_all_episodes(target_url, latest_only=True)
+    print(f"Attempting to scrape the latest episode from: {target_url}")
+    episode = fetch_and_extract_latest_episode(target_url)
 
-    if extracted_episodes:
-        print(
-            f"\nSuccessfully extracted a total of {len(extracted_episodes)} episodes:\n"
-        )
-        for i, episode in enumerate(extracted_episodes):
-            print(f"{i+1}. Title: {episode['title']}")
-            print(f"   Link: {episode['link']}\n")
+    if episode:
+        print(f"Title: {episode['title']}, link: {episode['link']}, .")
     else:
-        print("\nNo episodes were successfully extracted from the live page.")
-        print(
-            f"Please check '{os.path.abspath('listennotes_live_page_full.html')}' to see the content that was fetched."
-        )
-        print(
-            "The HTML structure of the live page might differ, or the sections might be missing/changed."
-        )
+        print("\nNo episodes was successfully extracted from the live page.")

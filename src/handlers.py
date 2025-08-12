@@ -4,7 +4,7 @@ import itertools
 from flashtext import KeywordProcessor
 
 from manage_podcasts.src.selenium_handler import download_audio
-from manage_podcasts.src.download_series import fetch_and_extract_all_episodes
+from manage_podcasts.src.download_series import fetch_and_extract_latest_episode
 from manage_podcasts.src.transcription import transcribe
 from manage_podcasts.src.slack_alert import send_slack_message
 
@@ -35,7 +35,7 @@ async def handle_podcast(source, keywords):
     """
 
     print("\nStep 1: Get link for latest episode...")
-    latest_episode = fetch_and_extract_all_episodes(source["url"], latest_only=True)[0]
+    latest_episode = fetch_and_extract_latest_episode(source["url"])
 
     if (
         source["latest_episode"]
