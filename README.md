@@ -9,6 +9,9 @@ An example of the generated alerts can be found below:
 
 ![img.png](docs/slack_alert_example.png)
 
+**Bonus**: Over [50 podcast languages supported](https://platform.openai.com/docs/guides/speech-to-text/supported-languages/#supported-languages) supported, 
+foreign language will be translated to match keywords in english. Agrolink and Canal Rural Clima, part of the current config, are in portuguese.
+
 # Setup
 
 1. Before running:
