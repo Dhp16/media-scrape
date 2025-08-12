@@ -3,7 +3,9 @@
 Media-scrape provides a solution for finding references to keywords in podcasts within minutes of their release.
 Add your favorite podcasts and keywords to the config, connect your slack channel and expect alerts to come in! 
 As found here it is configured to track 3 podcasts covering agriculture looking for keywords such as "flood", "drought" or "strike".
-An example of the generated alerts can be found below.
+An example of the generated alerts can be found below:
+
+![img.png](docs/slack_alert_example.png)
 
 # Setup
 
@@ -26,10 +28,6 @@ Run by calling `python main.py`
 
 The code will iterate through the provided sources, download the latest episode (translate to english where necessary), 
 search for the presence of the set keywords and alert to their presence in your chosen slack channel.
-
-**What would I expect to see in slack?**
-
-![img.png](docs/slack_alert_example.png)
 
 **What would I expect to see the in the console?**
 
