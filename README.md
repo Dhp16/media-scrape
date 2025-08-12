@@ -27,3 +27,7 @@ search for the presence of the set keywords and alert to their presence in your 
 **What would I expect to see the in the console?**
 
 ![img.png](docs/logs_screenshot.png)
+
+# How does it work
+
+![Flow chart](docs/flow_chart.svg)
