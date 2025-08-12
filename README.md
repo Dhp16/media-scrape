@@ -23,3 +23,7 @@ search for the presence of the set keywords and alert to their presence in your 
 **What would I expect to see the in the console?**
 
 ![img.png](docs/logs_screenshot.png)
+
+**What would I expect to see in slack?**
+
+![img.png](docs/slack_alert_example.png)
