@@ -1,14 +1,25 @@
 import asyncio
 import itertools
+import os
 
 from flashtext import KeywordProcessor
 
-from manage_podcasts.config import TIMOUT_MS
+from manage_podcasts.config import TIMOUT_MS, DOWNLOADS_FOLDER
 from manage_podcasts.src.my_types import Media
 from manage_podcasts.src.selenium_handler import download_audio
 from manage_podcasts.src.download_series import fetch_and_extract_latest_episode
 from manage_podcasts.src.transcription import transcribe
 from manage_podcasts.src.slack_alert import send_slack_message
+
+
+def clean_up_temp_directory():
+    for filename in os.listdir(DOWNLOADS_FOLDER):
+        file_path = os.path.join(DOWNLOADS_FOLDER, filename)
+        try:
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+        except Exception as e:
+            print(f"Failed to delete file: {file_path} with error: {e}")
 
 
 def find_keywords(text, keywords):
@@ -94,6 +105,8 @@ async def iterate_through_media(sources, keywords):
         print(
             f"\nFinished cycling through sources, waiting {TIMOUT_MS/(60*1000)} minutes..."
         )
+
+        clean_up_temp_directory()
         await asyncio.sleep(TIMOUT_MS)
 
 

@@ -53,5 +53,5 @@ def transcribe(audio_file_path: str, language_code: str, verbose=False):
 
 
 if __name__ == "__main__":
-    path = "/manage_podcasts/audio_files/temp/agnews_test.mp3"
+    path = "/test_files/agrinews_July_30th_2025.mp3"
     transcribe(path, "pt")

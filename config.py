@@ -2,7 +2,7 @@ import os
 
 from manage_podcasts.src.my_types import Media
 
-DOWNLOADS_FOLDER = "C:\\dev\\podsights\\manage_podcasts\\audio_files\\temp\\"
+DOWNLOADS_FOLDER = "temp\\"
 
 SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
 SLACK_CHANNEL_ID = "C09A8LUMU4R"
@@ -13,7 +13,7 @@ TIMOUT_MS = 15 * 60 * 1000
 SOURCES = [
     {
         "type": Media.PODCAST,
-        "name": "Agrolink",
+        "name": "Agrolink",  # Brazilian agricultural news
         "url": "https://www.listennotes.com/podcasts/agrolink-news-agrolink-vcfmUpiP2zO/",
         "language": "portuguese",
         "language_code": "pt",
