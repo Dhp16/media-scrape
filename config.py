@@ -2,13 +2,8 @@ import os
 
 from manage_podcasts.src.my_types import Media
 
-DOWNLOADS_FOLDER = "temp\\"
-
 SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
-SLACK_CHANNEL_ID = "C09A8LUMU4R"
-
-TIMOUT_MS = 15 * 60 * 1000
-# time between checks for updates
+SLACK_CHANNEL_ID = os.environ.get("SLACK_CHANNEL_ID", "C09A8LUMU4R")
 
 SOURCES = [
     {
@@ -137,3 +132,7 @@ KEYWORDS = {
         "improving margins",
     ],
 }
+
+TIMOUT_MS = 15 * 60 * 1000  # time between checks for updates
+
+DOWNLOADS_FOLDER = "temp\\"  # where audio and text files are stored for processing
