@@ -5,7 +5,7 @@ import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from manage_podcasts.config import DOWNLOADS_FOLDER
+from config import DOWNLOADS_FOLDER
 
 
 def sanitize_filename(name: str) -> str:

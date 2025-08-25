@@ -1,5 +1,8 @@
-from enum import Enum
+from enum import StrEnum, Enum, auto
 
+class Mode(StrEnum):
+    ALERT = auto()
+    HARVEST = auto()
 
 class Media(Enum):
     """
@@ -8,3 +11,4 @@ class Media(Enum):
 
     PODCAST = "PODCAST"
     NEWS_SITE = "NEWS_SITE"
+

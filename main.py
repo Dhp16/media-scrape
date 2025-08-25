@@ -1,5 +1,15 @@
-from manage_podcasts.src.handlers import scrape_sources
-from manage_podcasts.config import KEYWORDS, SOURCES
+import asyncio
+
+from config import KEYWORDS, SOURCES
+
+from src.handlers import scrape_sources_for_alerts
+from src.harvestor import harvest
+from src.my_types import Mode
+
+RUN_MODE = Mode.HARVEST
 
 if __name__ == "__main__":
-    scrape_sources(SOURCES, KEYWORDS)
+    if RUN_MODE == Mode.ALERT:
+        scrape_sources_for_alerts(SOURCES, KEYWORDS)
+    elif RUN_MODE == Mode.HARVEST:
+        asyncio.run(harvest())

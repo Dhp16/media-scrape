@@ -1,7 +1,7 @@
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-from manage_podcasts.config import SLACK_BOT_TOKEN, SLACK_CHANNEL_ID
+from config import SLACK_BOT_TOKEN, SLACK_CHANNEL_ID
 
 
 def send_slack_message(text):

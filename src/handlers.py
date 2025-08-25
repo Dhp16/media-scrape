@@ -5,12 +5,12 @@ import re
 
 from flashtext import KeywordProcessor
 
-from manage_podcasts.config import TIMOUT_MS, DOWNLOADS_FOLDER
-from manage_podcasts.src.my_types import Media
-from manage_podcasts.src.selenium_handler import download_audio
-from manage_podcasts.src.download_series import fetch_and_extract_latest_episode
-from manage_podcasts.src.transcription import transcribe
-from manage_podcasts.src.slack_alert import send_slack_message
+from config import TIMOUT_MS, DOWNLOADS_FOLDER
+from src.my_types import Media
+from src.selenium_handler import download_audio
+from src.download_series import fetch_and_extract_latest_episode
+from src.transcription import transcribe
+from src.slack_alert import send_slack_message
 
 
 def clean_up_temp_directory():
@@ -134,7 +134,7 @@ async def iterate_through_media(sources, keywords):
         await asyncio.sleep(TIMOUT_MS)
 
 
-def scrape_sources(sources, keywords):
+def scrape_sources_for_alerts(sources, keywords):
     keywords_flat = list(itertools.chain.from_iterable(keywords.values()))
     asyncio.run(iterate_through_media(sources, keywords_flat))
 

@@ -1,6 +1,6 @@
 import os
 
-from manage_podcasts.src.my_types import Media
+from src.my_types import Media
 
 SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
 SLACK_CHANNEL_ID = os.environ.get("SLACK_CHANNEL_ID", "C09A8LUMU4R")
