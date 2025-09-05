@@ -1,5 +1,6 @@
-import whisper
-import time  # To measure transcription time
+import time
+
+from faster_whisper import WhisperModel
 
 
 def setup_model():
@@ -17,17 +18,17 @@ def setup_model():
     # You can force CPU with device="cpu" argument if needed.
     print(f"Loading Whisper model '{MODEL_SIZE}'...")
     try:
-        model = whisper.load_model(MODEL_SIZE)
+        model = WhisperModel(MODEL_SIZE, device="cuda", compute_type="float16")
         print(f"Model '{MODEL_SIZE}' loaded successfully.")
-        if model.device.type == "cuda":
+        if model.device == "cuda":
             print("Whisper is using GPU (CUDA).")
         else:
-            print("Whisper is using CPU.")
+            print(f"Whisper is using {model.device}.")
 
         return model
 
     except Exception as e:
-        msg = f"Error loading Whisper model: {e}. Ensure PyTorch is installed correctly (with CUDA support if applicable)."
+        msg = f"Error loading Whisper model: {e}. Ensure faster-whisper and a CUDA-compatible torch are installed."
         print(msg)
         raise Exception(msg)
 
@@ -41,9 +42,25 @@ def transcribe(audio_file_path: str, language_code: str, verbose=False):
 
     model_task = "transcribe" if language_code == "en" else "translate"
 
-    result = model.transcribe(
-        audio_file_path, language=language_code, task=model_task, verbose=verbose
+    segments, info = model.transcribe(
+        audio_file_path, language=language_code, task=model_task, beam_size=5
     )
+
+    segment_list = []
+    for segment in segments:
+        segment_list.append(
+            {"start": segment.start, "end": segment.end, "text": segment.text}
+        )
+        if verbose:
+            print(
+                f"[{segment.start:.2f}s -> {segment.end:.2f}s] {segment.text.strip()}"
+            )
+
+    result = {
+        "text": " ".join([s["text"].strip() for s in segment_list]),
+        "segments": segment_list,
+        "language": info.language,
+    }
 
     end_time = time.time()
     duration = end_time - start_time
