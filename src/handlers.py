@@ -7,7 +7,7 @@ from flashtext import KeywordProcessor
 
 from config import TIMOUT_MS, DOWNLOADS_FOLDER
 from src.my_types import Media
-from src.selenium_handler import download_audio
+from src.web.selenium_handler import download_audio
 from src.download_series import fetch_and_extract_latest_episode
 from src.transcription import transcribe
 from src.slack_alert import send_slack_message
