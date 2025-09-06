@@ -1,4 +1,3 @@
-import re
 import requests
 import time
 
@@ -6,13 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 from config import DOWNLOADS_FOLDER
-
-
-def sanitize_filename(name: str) -> str:
-    """Removes characters invalid for filenames and replaces spaces."""
-    name = re.sub(r'[<>:"/\\|?*]', "", name)
-    name = name.replace(" ", "_").replace(":", "_")  # Also replace colons
-    return name[:150]
+from src.utils.file_management import sanitize_filename
 
 
 def download_audio_from_redirect(redirect_url: str, filepath: str):
