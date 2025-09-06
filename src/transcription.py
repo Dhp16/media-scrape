@@ -1,6 +1,7 @@
 import time
 
 from faster_whisper import WhisperModel
+from tqdm import tqdm
 
 
 def setup_model():
@@ -18,7 +19,7 @@ def setup_model():
     # You can force CPU with device="cpu" argument if needed.
     print(f"Loading Whisper model '{MODEL_SIZE}'...")
     try:
-        model = WhisperModel(MODEL_SIZE, device="cuda", compute_type="float32")
+        model = WhisperModel(MODEL_SIZE, device="cuda", compute_type="int8_float32")
         print(f"Model '{MODEL_SIZE}' loaded successfully.")
         return model
 
@@ -28,7 +29,9 @@ def setup_model():
         raise Exception(msg)
 
 
-def transcribe(audio_file_path: str, language_code: str, verbose=False):
+def transcribe(
+    audio_file_path: str, language_code: str, verbose=False, show_progress_bar=False
+):
     model = setup_model()
 
     # --- Transcribe the audio ---
@@ -41,6 +44,10 @@ def transcribe(audio_file_path: str, language_code: str, verbose=False):
         audio_file_path, language=language_code, task=model_task, beam_size=5
     )
 
+    pbar = None
+    if show_progress_bar:
+        pbar = tqdm(total=info.duration, unit="s", desc="Transcribing", ncols=100)
+
     segment_list = []
     for segment in segments:
         segment_list.append(
@@ -50,6 +57,14 @@ def transcribe(audio_file_path: str, language_code: str, verbose=False):
             print(
                 f"[{segment.start:.2f}s -> {segment.end:.2f}s] {segment.text.strip()}"
             )
+
+        if pbar:
+            pbar.n = segment.end
+            pbar.refresh()
+
+    if pbar:
+        pbar.n = info.duration  # ensure bar completes
+        pbar.close()
 
     result = {
         "text": " ".join([s["text"].strip() for s in segment_list]),
@@ -66,4 +81,4 @@ def transcribe(audio_file_path: str, language_code: str, verbose=False):
 
 if __name__ == "__main__":
     path = "test_files/agrinews_July_30th_2025.mp3"
-    transcribe(path, "pt")
+    transcribe(path, "pt", show_progress_bar=True)

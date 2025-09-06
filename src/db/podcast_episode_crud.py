@@ -7,7 +7,6 @@ from sqlalchemy import insert, func
 
 from src.db.database import async_session_factory
 
-from src.db.models.podcast_episode import PodcastEpisode
 from src.db.models.transcripts import Transcript
 
 

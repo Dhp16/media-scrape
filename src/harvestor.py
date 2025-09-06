@@ -1,12 +1,26 @@
-import sys
 import asyncio
-from datetime import datetime
+import os
+import sys
+
+from datetime import datetime, timezone
 
 from src.download_series import fetch_and_extract_latest_episode
 from src.db.podcast_episode_crud import save_episode_optimized
 from src.web.selenium_handler import download_audio
 from src.transcription import transcribe
 from src.sourcing.process_jre_xml import get_podcast_data
+from src.utils.file_management import sanitize_filename
+
+
+def ensure_utc(dt: datetime) -> datetime:
+    """
+    Ensure that a datetime is timezone-aware (UTC).
+    If it's naive, assume it's UTC and set tzinfo accordingly.
+    """
+    if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
+        # Naive datetime → make it aware in UTC
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
 
 
 async def harvest():
@@ -52,16 +66,17 @@ async def iterate_through_jre():
     series_name = "The Joe Rogan Experience"
     language_code = "en"
 
-    for episode in data[1:]:
+    for episode in data:
         file_location = download_audio(episode["title"], episode["audio_url"])
         transcription = transcribe(
-            file_location, language_code
+            file_location, language_code, show_progress_bar=True
         )  # returns dict with keys: ['text', 'segments', 'language']
+
         episode = await save_episode_optimized(
-            podcast_name=series_name,
+            podcast_title=series_name,
             episode_title=episode["title"],
-            published_date=episode["published_at"],
-            transcription=transcription,
+            published_date=ensure_utc(episode["published_at"]),
+            transcription=transcription["text"],
         )
 
     return

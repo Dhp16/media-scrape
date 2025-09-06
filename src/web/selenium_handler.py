@@ -1,3 +1,4 @@
+import os
 import requests
 import time
 
@@ -66,6 +67,11 @@ def download_audio_from_redirect(redirect_url: str, filepath: str):
 def download_audio(title, url):
     sanitized_title = sanitize_filename(title)
     fs_location = DOWNLOADS_FOLDER + sanitized_title + ".mp3"
+
+    if os.path.isfile(fs_location):
+        print(f"File already exists for {title}, skipping download")
+        return fs_location
+
     is_success = download_audio_from_redirect(url, fs_location)
 
     return fs_location if is_success else None
