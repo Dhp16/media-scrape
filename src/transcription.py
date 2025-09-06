@@ -18,13 +18,8 @@ def setup_model():
     # You can force CPU with device="cpu" argument if needed.
     print(f"Loading Whisper model '{MODEL_SIZE}'...")
     try:
-        model = WhisperModel(MODEL_SIZE, device="cuda", compute_type="float16")
+        model = WhisperModel(MODEL_SIZE, device="cuda", compute_type="float32")
         print(f"Model '{MODEL_SIZE}' loaded successfully.")
-        if model.device == "cuda":
-            print("Whisper is using GPU (CUDA).")
-        else:
-            print(f"Whisper is using {model.device}.")
-
         return model
 
     except Exception as e:
@@ -70,5 +65,5 @@ def transcribe(audio_file_path: str, language_code: str, verbose=False):
 
 
 if __name__ == "__main__":
-    path = "/test_files/agrinews_July_30th_2025.mp3"
+    path = "test_files/agrinews_July_30th_2025.mp3"
     transcribe(path, "pt")
