@@ -1,3 +1,4 @@
+import asyncio
 import zlib
 import datetime
 
@@ -5,16 +6,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, func
 
 from src.db.database import async_session_factory
+
 from src.db.models.podcast_episode import PodcastEpisode
+from src.db.models.transcripts import Transcript
 
 
 async def save_episode_optimized(
-    podcast_name: str,
+    podcast_title: str,
     episode_title: str,
     published_date: datetime.datetime,
     transcription: str,
-    async_session: AsyncSession,  # Pass the session in for better transaction control
-) -> PodcastEpisode:
+):
     """
     Compresses a transcript, generates a search vector, and saves a new
     podcast episode to the database in a single, efficient transaction.
@@ -30,9 +32,9 @@ async def save_episode_optimized(
     # efficient as the raw text is sent to the DB once and never stored.
 
     stmt = (
-        insert(PodcastEpisode)
+        insert(Transcript)
         .values(
-            podcast_name=podcast_name,
+            podcast_title=podcast_title,
             episode_title=episode_title,
             published_date=published_date,
             compressed_transcription=compressed_bytes,
@@ -41,13 +43,17 @@ async def save_episode_optimized(
             # 'english' is the dictionary to use for stemming and stop words.
             search_vector=func.to_tsvector("english", transcription),
         )
-        .returning(PodcastEpisode)  # Ask the DB to return the newly created row
+        .returning(Transcript)  # Ask the DB to return the newly created row
     )
 
-    result = await async_session.execute(stmt)
-    await async_session.commit()
+    async with async_session_factory() as session:
+        result = await session.execute(stmt)
+        await session.commit()
+        new_transcript = result.scalar_one()  # Get the single ORM object back
 
-    new_episode = result.scalar_one()  # Get the single ORM object back
+    print(f"Successfully saved episode with ID: {new_transcript.id}")
+    return new_transcript
 
-    print(f"Successfully saved episode with ID: {new_episode.id}")
-    return new_episode
+
+if __name__ == "__main__":
+    asyncio.run(save_episode_optimized("test", "test", datetime.datetime.now(), "test"))
